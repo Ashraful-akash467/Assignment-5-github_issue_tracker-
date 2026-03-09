@@ -16,9 +16,14 @@ function login() {
 // Display all issues
 const displayAll = (issues) => {
     const container = document.getElementById("card");
+    const counter = document.getElementById("issueCount");
+
     container.innerHTML = "";
+    counter.textContent = issues.length;
 
     issues.forEach(issue => {
+
+
         const div = document.createElement("div");
         div.className = "w-[360px] bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden";
 
@@ -32,9 +37,15 @@ const displayAll = (issues) => {
                     <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
                         <div class="w-5 h-5 border-2 border-green-500 rounded-full border-dashed"></div>
                     </div>
-                    <span class="px-4 py-1 text-sm font-semibold ${issue.priority === "HIGH" ? "text-red-500 bg-red-100" : "text-green-500 bg-green-100"} rounded-full">
-                        ${issue.priority || "LOW"}
-                    </span>
+                    <span class="px-4 py-1 text-sm font-semibold ${
+                            issue.priority === "high"
+                                ? "text-red-500 bg-red-100"
+                                : issue.priority === "medium"
+                                ? "text-yellow-500 bg-yellow-100"
+                                : "text-gray-500 bg-gray-200"
+                        } rounded-full">
+                            ${issue.priority || "low"}
+                        </span>
                 </div>
 
                 <h2 class="text-lg font-semibold text-gray-800 leading-snug mb-2">
@@ -44,18 +55,33 @@ const displayAll = (issues) => {
                 <p class="text-gray-500 text-sm mb-4">
                     ${issue.description || "No description"}
                 </p>
-                        <!-- Tags -->
-                        <div class="flex gap-3 mb-4">
 
-                                <!-- Bug -->
-                        <span class="flex items-center gap-1 px-3 py-1 text-sm font-medium text-red-500 bg-red-100 rounded-full">
-                        🐞 BUG
-                        </span>
 
-                        <!-- Help Wanted -->
-                        <span class="flex items-center gap-1 px-3 py-1 text-sm font-medium text-yellow-600 bg-yellow-100 rounded-full">
-                        🛟 HELP WANTED
-                        </span>
+                                                            <!-- Tags -->
+                                    <div class="flex gap-3 mb-4 flex-wrap">
+                                                ${
+                                                    issue.labels?.map(label => {
+                                                        let colorClass = "text-gray-500 bg-gray-100";
+
+                                                        if (label.toLowerCase() === "bug") {
+                                                            colorClass = "text-red-500 bg-red-100";
+                                                        } 
+                                                        else if (label.toLowerCase() === "help wanted") {
+                                                            colorClass = "text-yellow-500 bg-yellow-100";
+                                                        } 
+                                                        else if (label.toLowerCase() === "enhancement") {
+                                                            colorClass = "text-green-500 bg-green-100";
+                                                        }
+
+                                                        return `<span class="px-3 py-1 text-sm font-semibold rounded-full ${colorClass}">
+                                                                    ${label}
+                                                                </span>`;
+                                                    }).join("") || "<span class='text-gray-400'>No labels</span>"
+                                                }
+                                            </div>
+
+
+
 
                 <div class="flex gap-3 mb-4">
                     ${issue.tags?.map(tag => `<span class="flex items-center gap-1 px-3 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">${tag}</span>`).join('') || ''}
@@ -75,12 +101,16 @@ const displayAll = (issues) => {
 // Display open issues
 const displayOpen = (issues) => {
     const container = document.getElementById("card");
+    const counter = document.getElementById("issueCount");
+
     container.innerHTML = "";
 
-    // Filter only open issues
     const openIssues = issues.filter(issue => issue.status === "open");
 
+    counter.textContent = openIssues.length;
+
     openIssues.forEach(issue => {
+
         const div = document.createElement("div");
         div.className = "w-[360px] bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden";
 
@@ -91,9 +121,15 @@ const displayOpen = (issues) => {
                     <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
                         <div class="w-5 h-5 border-2 border-green-500 rounded-full border-dashed"></div>
                     </div>
-                    <span class="px-4 py-1 text-sm font-semibold ${issue.priority === "HIGH" ? "text-red-500 bg-red-100" : "text-green-500 bg-green-100"} rounded-full">
-                        ${issue.priority || "LOW"}
-                    </span>
+                    <span class="px-4 py-1 text-sm font-semibold ${
+                            issue.priority === "high"
+                                ? "text-red-500 bg-red-100"
+                                : issue.priority === "medium"
+                                ? "text-yellow-500 bg-yellow-100"
+                                : "text-gray-500 bg-gray-200"
+                        } rounded-full">
+                            ${issue.priority || "low"}
+                        </span>
                 </div>
 
                 <h2 class="text-lg font-semibold text-gray-800 leading-snug mb-2">
@@ -104,18 +140,29 @@ const displayOpen = (issues) => {
                     ${issue.description || "No description"}
                 </p>
 
-                        <!-- Tags -->
-                        <div class="flex gap-3 mb-4">
+                                                        <!-- Tags -->
+                                <div class="flex gap-3 mb-4 flex-wrap">
+                                                    ${
+                                                        issue.labels?.map(label => {
+                                                            let colorClass = "text-gray-500 bg-gray-100";
 
-                                <!-- Bug -->
-                        <span class="flex items-center gap-1 px-3 py-1 text-sm font-medium text-red-500 bg-red-100 rounded-full">
-                        🐞 BUG
-                        </span>
+                                                            if (label.toLowerCase() === "bug") {
+                                                                colorClass = "text-red-500 bg-red-100";
+                                                            } 
+                                                            else if (label.toLowerCase() === "help wanted") {
+                                                                colorClass = "text-yellow-500 bg-yellow-100";
+                                                            } 
+                                                            else if (label.toLowerCase() === "enhancement") {
+                                                                colorClass = "text-green-500 bg-green-100";
+                                                            }
 
-                        <!-- Help Wanted -->
-                        <span class="flex items-center gap-1 px-3 py-1 text-sm font-medium text-yellow-600 bg-yellow-100 rounded-full">
-                        🛟 HELP WANTED
-                        </span>
+                                                            return `<span class="px-3 py-1 text-sm font-semibold rounded-full ${colorClass}">
+                                                                        ${label}
+                                                                    </span>`;
+                                                        }).join("") || "<span class='text-gray-400'>No labels</span>"
+                                                    }
+                                                </div>
+
 
                 <div class="flex gap-3 mb-4">
                     ${issue.tags?.map(tag => `<span class="flex items-center gap-1 px-3 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">${tag}</span>`).join('') || ''}
@@ -135,12 +182,16 @@ const displayOpen = (issues) => {
 /// Display closed issues
 const displayClose = (issues) => {
     const container = document.getElementById("card");
+    const counter = document.getElementById("issueCount");
+
     container.innerHTML = "";
 
-    // Filter only closed issues
     const closedIssues = issues.filter(issue => issue.status === "closed");
 
+    counter.textContent = closedIssues.length;
+
     closedIssues.forEach(issue => {
+        
         const div = document.createElement("div");
         div.className = "w-[360px] bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden";
 
@@ -151,9 +202,15 @@ const displayClose = (issues) => {
                     <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
                         <div class="w-5 h-5 border-2 border-green-500 rounded-full border-dashed"></div>
                     </div>
-                    <span class="px-4 py-1 text-sm font-semibold ${issue.priority === "HIGH" ? "text-red-500 bg-red-100" : "text-green-500 bg-green-100"} rounded-full">
-                        ${issue.priority || "LOW"}
-                    </span>
+                    <span class="px-4 py-1 text-sm font-semibold ${
+                            issue.priority === "high"
+                                ? "text-red-500 bg-red-100"
+                                : issue.priority === "medium"
+                                ? "text-yellow-500 bg-yellow-100"
+                                : "text-gray-500 bg-gray-200"
+                        } rounded-full">
+                            ${issue.priority || "low"}
+                        </span>
                 </div>
 
                 <h2 class="text-lg font-semibold text-gray-800 leading-snug mb-2">
@@ -164,18 +221,29 @@ const displayClose = (issues) => {
                     ${issue.description || "No description"}
                 </p>
 
-                        <!-- Tags -->
-                        <div class="flex gap-3 mb-4">
+                                                    <!-- Tags -->
+                            <div class="flex gap-3 mb-4 flex-wrap">
+                                        ${
+                                            issue.labels?.map(label => {
+                                                let colorClass = "text-gray-500 bg-gray-100";
 
-                                <!-- Bug -->
-                        <span class="flex items-center gap-1 px-3 py-1 text-sm font-medium text-red-500 bg-red-100 rounded-full">
-                        🐞 BUG
-                        </span>
+                                                if (label.toLowerCase() === "bug") {
+                                                    colorClass = "text-red-500 bg-red-100";
+                                                } 
+                                                else if (label.toLowerCase() === "help wanted") {
+                                                    colorClass = "text-yellow-500 bg-yellow-100";
+                                                } 
+                                                else if (label.toLowerCase() === "enhancement") {
+                                                    colorClass = "text-green-500 bg-green-100";
+                                                }
 
-                        <!-- Help Wanted -->
-                        <span class="flex items-center gap-1 px-3 py-1 text-sm font-medium text-yellow-600 bg-yellow-100 rounded-full">
-                        🛟 HELP WANTED
-                        </span>
+                                                return `<span class="px-3 py-1 text-sm font-semibold rounded-full ${colorClass}">
+                                                            ${label}
+                                                        </span>`;
+                                            }).join("") || "<span class='text-gray-400'>No labels</span>"
+                                        }
+                                    </div>
+                
 
                 <div class="flex gap-3 mb-4">
                     ${issue.tags?.map(tag => `<span class="flex items-center gap-1 px-3 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">${tag}</span>`).join('') || ''}
