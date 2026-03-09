@@ -111,6 +111,55 @@
 
 
 
+      <!-- ISSUE MODAL -->
+<div id="issueModal" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50">
+
+    <div class="bg-white w-[600px] rounded-xl p-6 shadow-lg relative">
+
+        <!-- Title -->
+        <h2 id="modalTitle" class="text-2xl font-bold mb-2"></h2>
+
+        <!-- Status -->
+        <div class="flex items-center gap-3 mb-4 text-sm text-gray-500">
+            <span id="modalStatus" class="px-3 py-1 rounded-full text-white bg-green-500 text-xs"></span>
+            <span id="modalAuthor"></span>
+            <span id="modalDate"></span>
+        </div>
+
+        <!-- Labels -->
+        <div id="modalLabels" class="flex gap-2 mb-4 flex-wrap"></div>
+
+        <!-- Description -->
+        <p id="modalDescription" class="text-gray-600 mb-6"></p>
+
+        <!-- Assignee + Priority -->
+        <div class="bg-gray-100 p-4 rounded-lg flex justify-between">
+
+            <div>
+                <p class="text-sm text-gray-500">Assignee</p>
+                <p id="modalAssignee" class="font-semibold"></p>
+            </div>
+
+            <div>
+                <p class="text-sm text-gray-500">Priority</p>
+                <span id="modalPriority" class="px-3 py-1 rounded-full text-sm font-semibold"></span>
+            </div>
+
+        </div>
+
+        <!-- Close button -->
+        <div class="flex justify-end mt-6">
+            <button onclick="closeModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg">
+                Close
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+
+
 
 
 

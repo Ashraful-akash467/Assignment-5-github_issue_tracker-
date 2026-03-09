@@ -13,6 +13,31 @@ function login() {
 // Fetch all issues from API
 
 
+// ---------------- LOAD FUNCTIONS ----------------
+
+const loadAll = () => {
+  fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues")
+    .then(res => res.json())
+    .then(json => displayAll(json.data))
+    .catch(err => console.error(err));
+};
+
+const loadOpen = () => {
+  fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues")
+    .then(res => res.json())
+    .then(json => displayOpen(json.data))
+    .catch(err => console.error(err));
+};
+
+const loadClose = () => {
+  fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues")
+    .then(res => res.json())
+    .then(json => displayClose(json.data))
+    .catch(err => console.error(err));
+};
+
+
+
 // Display all issues
 const displayAll = (issues) => {
     const container = document.getElementById("card");
@@ -23,9 +48,8 @@ const displayAll = (issues) => {
 
     issues.forEach(issue => {
 
-
         const div = document.createElement("div");
-        div.className = "w-[360px] bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden";
+        div.className = "w-[360px] bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden cursor-pointer";
 
         div.innerHTML = `
             <!-- Top green line -->
@@ -56,32 +80,29 @@ const displayAll = (issues) => {
                     ${issue.description || "No description"}
                 </p>
 
+                <!-- Tags -->
+                <div class="flex gap-3 mb-4 flex-wrap">
+                    ${
+                        issue.labels?.map(label => {
 
-                                                            <!-- Tags -->
-                                    <div class="flex gap-3 mb-4 flex-wrap">
-                                                ${
-                                                    issue.labels?.map(label => {
-                                                        let colorClass = "text-gray-500 bg-gray-100";
+                            let colorClass = "text-gray-500 bg-gray-100";
 
-                                                        if (label.toLowerCase() === "bug") {
-                                                            colorClass = "text-red-500 bg-red-100";
-                                                        } 
-                                                        else if (label.toLowerCase() === "help wanted") {
-                                                            colorClass = "text-yellow-500 bg-yellow-100";
-                                                        } 
-                                                        else if (label.toLowerCase() === "enhancement") {
-                                                            colorClass = "text-green-500 bg-green-100";
-                                                        }
+                            if (label.toLowerCase() === "bug") {
+                                colorClass = "text-red-500 bg-red-100";
+                            } 
+                            else if (label.toLowerCase() === "help wanted") {
+                                colorClass = "text-yellow-500 bg-yellow-100";
+                            } 
+                            else if (label.toLowerCase() === "enhancement") {
+                                colorClass = "text-green-500 bg-green-100";
+                            }
 
-                                                        return `<span class="px-3 py-1 text-sm font-semibold rounded-full ${colorClass}">
-                                                                    ${label}
-                                                                </span>`;
-                                                    }).join("") || "<span class='text-gray-400'>No labels</span>"
-                                                }
-                                            </div>
-
-
-
+                            return `<span class="px-3 py-1 text-sm font-semibold rounded-full ${colorClass}">
+                                        ${label}
+                                    </span>`;
+                        }).join("") || "<span class='text-gray-400'>No labels</span>"
+                    }
+                </div>
 
                 <div class="flex gap-3 mb-4">
                     ${issue.tags?.map(tag => `<span class="flex items-center gap-1 px-3 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">${tag}</span>`).join('') || ''}
@@ -94,249 +115,130 @@ const displayAll = (issues) => {
                 <p>${new Date(issue.createdAt).toLocaleDateString() || ""}</p>
             </div>
         `;
+
+        // CLICK EVENT FOR POPUP
+        div.addEventListener("click", () => openModal(issue));
+
         container.appendChild(div);
     });
 };
+
+
 
 // Display open issues
 const displayOpen = (issues) => {
-    const container = document.getElementById("card");
-    const counter = document.getElementById("issueCount");
-
-    container.innerHTML = "";
 
     const openIssues = issues.filter(issue => issue.status === "open");
+    displayAll(openIssues);
 
-    counter.textContent = openIssues.length;
-
-    openIssues.forEach(issue => {
-
-        const div = document.createElement("div");
-        div.className = "w-[360px] bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden";
-
-        div.innerHTML = `
-            <div class="h-1 bg-green-500"></div>
-            <div class="p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                        <div class="w-5 h-5 border-2 border-green-500 rounded-full border-dashed"></div>
-                    </div>
-                    <span class="px-4 py-1 text-sm font-semibold ${
-                            issue.priority === "high"
-                                ? "text-red-500 bg-red-100"
-                                : issue.priority === "medium"
-                                ? "text-yellow-500 bg-yellow-100"
-                                : "text-gray-500 bg-gray-200"
-                        } rounded-full">
-                            ${issue.priority || "low"}
-                        </span>
-                </div>
-
-                <h2 class="text-lg font-semibold text-gray-800 leading-snug mb-2">
-                    ${issue.title || "No Title"}
-                </h2>
-
-                <p class="text-gray-500 text-sm mb-4">
-                    ${issue.description || "No description"}
-                </p>
-
-                                                        <!-- Tags -->
-                                <div class="flex gap-3 mb-4 flex-wrap">
-                                                    ${
-                                                        issue.labels?.map(label => {
-                                                            let colorClass = "text-gray-500 bg-gray-100";
-
-                                                            if (label.toLowerCase() === "bug") {
-                                                                colorClass = "text-red-500 bg-red-100";
-                                                            } 
-                                                            else if (label.toLowerCase() === "help wanted") {
-                                                                colorClass = "text-yellow-500 bg-yellow-100";
-                                                            } 
-                                                            else if (label.toLowerCase() === "enhancement") {
-                                                                colorClass = "text-green-500 bg-green-100";
-                                                            }
-
-                                                            return `<span class="px-3 py-1 text-sm font-semibold rounded-full ${colorClass}">
-                                                                        ${label}
-                                                                    </span>`;
-                                                        }).join("") || "<span class='text-gray-400'>No labels</span>"
-                                                    }
-                                                </div>
-
-
-                <div class="flex gap-3 mb-4">
-                    ${issue.tags?.map(tag => `<span class="flex items-center gap-1 px-3 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">${tag}</span>`).join('') || ''}
-                </div>
-            </div>
-
-            <div class="border-t border-gray-200 px-5 py-3 text-sm text-gray-500">
-                <p>#${issue.id} by ${issue.author || "Unknown"}</p>
-                <p>${new Date(issue.createdAt).toLocaleDateString() || ""}</p>
-            </div>
-        `;
-        container.appendChild(div);
-    });
 };
 
 
-/// Display closed issues
-const displayClose = (issues) => {
-    const container = document.getElementById("card");
-    const counter = document.getElementById("issueCount");
 
-    container.innerHTML = "";
+// Display closed issues
+const displayClose = (issues) => {
 
     const closedIssues = issues.filter(issue => issue.status === "closed");
+    displayAll(closedIssues);
 
-    counter.textContent = closedIssues.length;
-
-    closedIssues.forEach(issue => {
-        
-        const div = document.createElement("div");
-        div.className = "w-[360px] bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden";
-
-        div.innerHTML = `
-            <div class="h-1 bg-purple-500"></div>
-            <div class="p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                        <div class="w-5 h-5 border-2 border-green-500 rounded-full border-dashed"></div>
-                    </div>
-                    <span class="px-4 py-1 text-sm font-semibold ${
-                            issue.priority === "high"
-                                ? "text-red-500 bg-red-100"
-                                : issue.priority === "medium"
-                                ? "text-yellow-500 bg-yellow-100"
-                                : "text-gray-500 bg-gray-200"
-                        } rounded-full">
-                            ${issue.priority || "low"}
-                        </span>
-                </div>
-
-                <h2 class="text-lg font-semibold text-gray-800 leading-snug mb-2">
-                    ${issue.title || "No Title"}
-                </h2>
-
-                <p class="text-gray-500 text-sm mb-4">
-                    ${issue.description || "No description"}
-                </p>
-
-                                                    <!-- Tags -->
-                            <div class="flex gap-3 mb-4 flex-wrap">
-                                        ${
-                                            issue.labels?.map(label => {
-                                                let colorClass = "text-gray-500 bg-gray-100";
-
-                                                if (label.toLowerCase() === "bug") {
-                                                    colorClass = "text-red-500 bg-red-100";
-                                                } 
-                                                else if (label.toLowerCase() === "help wanted") {
-                                                    colorClass = "text-yellow-500 bg-yellow-100";
-                                                } 
-                                                else if (label.toLowerCase() === "enhancement") {
-                                                    colorClass = "text-green-500 bg-green-100";
-                                                }
-
-                                                return `<span class="px-3 py-1 text-sm font-semibold rounded-full ${colorClass}">
-                                                            ${label}
-                                                        </span>`;
-                                            }).join("") || "<span class='text-gray-400'>No labels</span>"
-                                        }
-                                    </div>
-                
-
-                <div class="flex gap-3 mb-4">
-                    ${issue.tags?.map(tag => `<span class="flex items-center gap-1 px-3 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">${tag}</span>`).join('') || ''}
-                </div>
-            </div>
-
-            <div class="border-t border-gray-200 px-5 py-3 text-sm text-gray-500">
-                <p>#${issue.id} by ${issue.author || "Unknown"}</p>
-                <p>${new Date(issue.createdAt).toLocaleDateString() || ""}</p>
-            </div>
-        `;
-        container.appendChild(div);
-    });
 };
 
 
 
 // Button toggle
 const buttons = document.querySelectorAll(".filter-btn");
+
 buttons.forEach(btn => {
+
     btn.addEventListener("click", function() {
-        const loadAll = () => {
-    fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues")
-        .then(res => res.json())
-        .then(json => displayAll(json.data))
-        .catch(err => console.error(err));
-};
-
-const loadOpen = () => {
-    fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues")
-        .then(res => res.json())
-        .then(json => displayOpen(json.data))
-        .catch(err => console.error(err));
-};
-
-const loadClose = () => {
-    fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues")
-        .then(res => res.json())
-        .then(json => displayClose(json.data))
-        .catch(err => console.error(err));
-};
-
 
         buttons.forEach(b => {
             b.classList.remove("bg-blue-500", "text-white");
             b.classList.add("bg-white", "text-black");
         });
+
         this.classList.remove("bg-white", "text-black");
         this.classList.add("bg-blue-500", "text-white");
 
-        // Filter functionality (optional for now)
         if(this.id === "all") loadAll();
-        else if(this.id === "open") loadOpen();  // later add filtering
+        else if(this.id === "open") loadOpen();
         else if(this.id === "closed") loadClose();
+
     });
+
 });
+
+
+
+//   pop up card handeler
+
+function openModal(issue){
+
+    const modal = document.getElementById("issueModal");
+
+    document.getElementById("modalTitle").textContent = issue.title;
+    document.getElementById("modalDescription").textContent = issue.description;
+
+    document.getElementById("modalAuthor").textContent = "Opened by " + issue.author;
+    document.getElementById("modalDate").textContent = new Date(issue.createdAt).toLocaleDateString();
+
+    document.getElementById("modalAssignee").textContent = issue.author;
+
+    // Status
+    const status = document.getElementById("modalStatus");
+    status.textContent = issue.status;
+
+    status.className = "px-3 py-1 rounded-full text-xs text-white " + 
+        (issue.status === "open" ? "bg-green-500" : "bg-red-500");
+
+    // Priority
+    const priority = document.getElementById("modalPriority");
+
+    let priorityColor = "bg-gray-200 text-gray-700";
+
+    if(issue.priority === "high") priorityColor = "bg-red-500 text-white";
+    if(issue.priority === "medium") priorityColor = "bg-yellow-400 text-white";
+
+    priority.className = "px-3 py-1 rounded-full text-sm font-semibold " + priorityColor;
+    priority.textContent = issue.priority;
+
+    // Labels
+    const labelContainer = document.getElementById("modalLabels");
+
+    labelContainer.innerHTML = "";
+
+    issue.labels?.forEach(label => {
+
+        let color = "bg-gray-100 text-gray-700";
+
+        if(label.toLowerCase() === "bug") color = "bg-red-100 text-red-500";
+        if(label.toLowerCase() === "help wanted") color = "bg-yellow-100 text-yellow-600";
+        if(label.toLowerCase() === "enhancement") color = "bg-green-100 text-green-600";
+
+        labelContainer.innerHTML += `
+            <span class="px-3 py-1 text-sm rounded-full ${color}">
+                ${label}
+            </span>
+        `;
+
+    });
+
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+}
+
+
+
+function closeModal(){
+
+    const modal = document.getElementById("issueModal");
+
+    modal.classList.remove("flex");
+    modal.classList.add("hidden");
+
+}
+
+
 
 // Initial load
 loadAll();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
